@@ -1,0 +1,26 @@
+Job Title,Candidate Name,Skill Match %,Matched Skills,Missing Skills
+Data Scientist,Alice,35.0,python,ml
+Data Scientist,Joe Doe,30.0,python,ml
+Data Scientist,David,25.0,None,"ml, python"
+Data Scientist,Bob,20.0,None,"ml, python"
+Data Scientist,Charlie,20.0,None,"ml, python"
+Backend Developer,Bob,52.0,"spring boot, java",None
+Backend Developer,David,25.0,None,"spring boot, java"
+Backend Developer,Emma,25.0,None,"spring boot, java"
+Backend Developer,Alice,17.5,None,"spring boot, java"
+Backend Developer,Charlie,9.4,None,"spring boot, java"
+Frontend Developer,Charlie,52.0,"react, javascript",None
+Frontend Developer,Bob,34.4,None,"react, javascript"
+Frontend Developer,Alice,25.0,None,"react, javascript"
+Frontend Developer,David,25.0,None,"react, javascript"
+Frontend Developer,Emma,25.0,None,"react, javascript"
+Data Analyst,David,45.4,sql,data analytics
+Data Analyst,Alice,30.0,None,"data analytics, sql"
+Data Analyst,Bob,25.0,None,"data analytics, sql"
+Data Analyst,Emma,25.0,None,"data analytics, sql"
+Data Analyst,Joe Doe,4.4,None,"data analytics, sql"
+Digital Marketer,Emma,45.0,"seo, marketing",None
+Digital Marketer,Bob,20.0,None,"seo, marketing"
+Digital Marketer,David,14.0,None,"seo, marketing"
+Digital Marketer,Hippolyte Guermonprez,10.0,marketing,seo
+Digital Marketer,Alice,0.0,None,"seo, marketing"

@@ -1,0 +1,24 @@
+Candidate Name,Job Title,Skill Match %,Matched Skills,Missing Skills
+Alice,Data Scientist,34.0,python,ml
+Joe Doe,Data Scientist,29.0,python,ml
+David,Data Scientist,25.0,None,"ml, python"
+Bob,Data Scientist,20.0,None,"ml, python"
+Charlie,Data Scientist,20.0,None,"ml, python"
+Emma,Data Scientist,20.0,None,"ml, python"
+Bob,Backend Developer,46.2,"java, spring boot",None
+David,Backend Developer,22.0,None,"java, spring boot"
+Emma,Backend Developer,22.0,None,"java, spring boot"
+Alice,Backend Developer,15.4,None,"java, spring boot"
+Charlie,Frontend Developer,46.2,"react, javascript",None
+Bob,Frontend Developer,30.84,None,"react, javascript"
+Alice,Frontend Developer,22.0,None,"react, javascript"
+David,Frontend Developer,22.0,None,"react, javascript"
+Emma,Frontend Developer,22.0,None,"react, javascript"
+Joe Doe,Frontend Developer,22.0,None,"react, javascript"
+David,Data Analyst,40.44,sql,data analytics
+Alice,Data Analyst,27.0,None,"sql, data analytics"
+Bob,Data Analyst,22.0,None,"sql, data analytics"
+Emma,Data Analyst,22.0,None,"sql, data analytics"
+Emma,Digital Marketer,44.2,"seo, marketing",None
+Bob,Digital Marketer,20.0,None,"seo, marketing"
+David,Digital Marketer,14.0,None,"seo, marketing"
