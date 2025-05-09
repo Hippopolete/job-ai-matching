@@ -40,6 +40,11 @@ if selected_candidates:
 if selected_jobs:
     filtered_matches = filtered_matches[filtered_matches["Job Title"].isin(selected_jobs)]
 
+# Filter by minimum skill match %
+if "Skill Match %" in filtered_matches.columns:
+    min_match = st.slider("📈 Minimum Skill Match %", 0, 100, 20)
+    filtered_matches = filtered_matches[filtered_matches["Skill Match %"] >= min_match]
+
 # Show filtered results
 st.dataframe(filtered_matches, use_container_width=True)
 
