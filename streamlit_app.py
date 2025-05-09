@@ -14,6 +14,9 @@ def load_data():
     recruiter_view = pd.read_csv("recruiter_view.csv")
     return candidates, matched_jobs, recruiter_view
 
+# ⬅️ YOU FORGOT THIS LINE — IT'S REQUIRED
+candidates, matches_df, recruiter_view = load_data()
+
 # Create page tabs
 tab1, tab2, tab3 = st.tabs(["📋 Candidates", "✅ Final Matches", "📊 Recruiter View"])
 
@@ -61,4 +64,3 @@ with tab2:
 with tab3:
     st.subheader("📊 Recruiter View")
     st.dataframe(recruiter_view, use_container_width=True)
-
