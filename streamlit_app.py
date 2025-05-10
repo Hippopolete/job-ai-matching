@@ -50,56 +50,61 @@ with tab2:
         filtered_matches = filtered_matches[filtered_matches["Skill Match %"] >= min_match]
 
     # Show matches as individual cards
-for _, row in filtered_matches.iterrows():
-    with st.container():
-        st.markdown("---")  # separator
+    if not filtered_matches.empty:
+        for _, row in filtered_matches.iterrows():
+            with st.container():
+                st.markdown("---")
+                st.markdown(f"### 💼 {row['Job Title']}")
+                st.markdown(f"👤 Candidate: **{row['Candidate Name']}**")
 
-        st.markdown(f"### 💼 {row['Job Title']}")
-        st.markdown(f"👤 Candidate: **{row['Candidate Name']}**")
-match_score = row["Skill Match %"]
+                # Color-coded Skill Match %
+                match_score = row["Skill Match %"]
+                if match_score >= 70:
+                    color = "green"
+                elif match_score >= 40:
+                    color = "orange"
+                else:
+                    color = "red"
+                st.markdown(
+                    f"📈 Skill Match: <span style='color:{color}; font-weight:bold'>{match_score}%</span>",
+                    unsafe_allow_html=True
+                )
 
-# Determine color
-if match_score >= 70:
-    color = "green"
-elif match_score >= 40:
-    color = "orange"
-else:
-    color = "red"
+                # Missing skills
+                if pd.notna(row["Missing Skills"]) and row["Missing Skills"].strip():
+                    st.markdown(f"❌ Missing Skills: `{row['Missing Skills']}`")
 
-# Show colored badge-style text
-st.markdown(f"📈 Skill Match: <span style='color:{color}; font-weight:bold'>{match_score}%</span>", unsafe_allow_html=True)
+                # Expander for score logic
+                with st.expander("📊 Why this match?"):
+                    st.markdown("""
+                    - ✅ **Skills Match (60%)**
+                    - ✅ **Education Fit (20%)**
+                    - ✅ **Title + Experience Match (15%)**
+                    - ⚖️ Other relevant preferences (5%)
+                    """)
 
-        if pd.notna(row["Missing Skills"]) and row["Missing Skills"].strip():
-            st.markdown(f"❌ Missing Skills: `{row['Missing Skills']}`")
+                st.markdown(" ")
 
-        with st.expander("📊 Why this match?"):
-            st.markdown("""
-            - ✅ **Skills Match (60%)**
-            - ✅ **Education Fit (20%)**
-            - ✅ **Title + Experience Match (15%)**
-            - ⚖️ Other relevant preferences (5%)
-            """)
+        # Top Missing Skills Summary
+        if "Missing Skills" in filtered_matches.columns:
+            st.markdown("### 🧠 Top Missing Skills to Improve Your Match")
+            missing_skills_series = (
+                filtered_matches["Missing Skills"]
+                .dropna()
+                .str.split(", ")
+                .explode()
+                .str.strip()
+                .value_counts()
+            )
 
-        st.markdown(" ")
+            if not missing_skills_series.empty:
+                st.write(missing_skills_series.head(5))
+            else:
+                st.info("No missing skills found in current filtered results.")
+    else:
+        st.warning("No matches found with the selected filters.")
 
-    # Show top missing skills
-    if "Missing Skills" in filtered_matches.columns:
-        st.markdown("### 🧠 Top Missing Skills to Improve Your Match")
-        missing_skills_series = (
-            filtered_matches["Missing Skills"]
-            .dropna()
-            .str.split(", ")
-            .explode()
-            .str.strip()
-            .value_counts()
-        )
-
-        if not missing_skills_series.empty:
-            st.write(missing_skills_series.head(5))
-        else:
-            st.info("No missing skills found in current filtered results.")
-
-    # Match breakdown explanation (only once, expandable)
+    # Match breakdown explanation (global)
     with st.expander("ℹ️ How is the match score calculated?"):
         st.markdown("""
         The match score is calculated using:
@@ -116,7 +121,6 @@ st.markdown(f"📈 Skill Match: <span style='color:{color}; font-weight:bold'>{m
         "filtered_matches.csv",
         "text/csv"
     )
-
 # ------------------- TAB 3: Recruiter View -------------------
 with tab3:
     st.subheader("📊 Recruiter View")
