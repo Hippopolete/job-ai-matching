@@ -68,6 +68,14 @@ with tab2:
             st.write(missing_skills_series.head(5))
         else:
             st.info("No missing skills found in current filtered results.")
+    # Suggest courses for top missing skills
+    st.markdown("### 🎓 Suggested Courses to Improve Skills")
+
+    if not missing_skills_series.empty:
+        for skill in missing_skills_series.head(5).index:
+            st.markdown(f"- [{skill.title()} Course on Coursera](https://www.coursera.org/search?query={skill})")
+    else:
+        st.info("No recommended courses to show.")
 
     # Add download button
     st.download_button(
@@ -76,6 +84,8 @@ with tab2:
         "filtered_matches.csv",
         "text/csv"
     )
+
+
 
 # ------------------- TAB 3: Recruiter View -------------------
 with tab3:
