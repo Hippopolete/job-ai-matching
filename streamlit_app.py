@@ -56,7 +56,18 @@ for _, row in filtered_matches.iterrows():
 
         st.markdown(f"### 💼 {row['Job Title']}")
         st.markdown(f"👤 Candidate: **{row['Candidate Name']}**")
-        st.markdown(f"📈 Skill Match: **{row['Skill Match %']}%**")
+match_score = row["Skill Match %"]
+
+# Determine color
+if match_score >= 70:
+    color = "green"
+elif match_score >= 40:
+    color = "orange"
+else:
+    color = "red"
+
+# Show colored badge-style text
+st.markdown(f"📈 Skill Match: <span style='color:{color}; font-weight:bold'>{match_score}%</span>", unsafe_allow_html=True)
 
         if pd.notna(row["Missing Skills"]) and row["Missing Skills"].strip():
             st.markdown(f"❌ Missing Skills: `{row['Missing Skills']}`")
