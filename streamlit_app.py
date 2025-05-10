@@ -139,7 +139,41 @@ with tab4:
 
         if not candidate_matches.empty:
             st.markdown(f"### Top Matches for **{selected_name}**")
-            st.dataframe(candidate_matches.reset_index(drop=True), use_container_width=True)
+
+            for _, row in candidate_matches.iterrows():
+                with st.container():
+                    st.markdown("---")
+                    st.markdown(f"### 💼 {row['Job Title']}")
+
+                    # Color-coded Skill Match %
+                    match_score = row["Skill Match %"]
+                    if match_score >= 70:
+                        color = "green"
+                    elif match_score >= 40:
+                        color = "orange"
+                    else:
+                        color = "red"
+                    st.markdown(
+                        f"📈 Skill Match: <span style='color:{color}; font-weight:bold'>{match_score}%</span>",
+                        unsafe_allow_html=True
+                    )
+
+                    # Missing Skills
+                    if pd.notna(row["Missing Skills"]) and row["Missing Skills"].strip():
+                        st.markdown(f"❌ Missing Skills: `{row['Missing Skills']}`")
+
+                    # Explanation
+                    with st.expander("📊 Why this match?"):
+                        st.markdown("""
+                        - ✅ **Skills Match (60%)**
+                        - ✅ **Education Fit (20%)**
+                        - ✅ **Title + Experience Match (15%)**
+                        - ⚖️ Other relevant preferences (5%)
+                        """)
+
+                    st.markdown(" ")
+
         else:
             st.warning("No matches found for this candidate.")
+
 
