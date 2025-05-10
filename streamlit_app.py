@@ -76,14 +76,31 @@ with tab2:
 
                 # Expander for score logic
                 with st.expander("📊 Why this match?"):
-                    st.markdown("""
-                    - ✅ **Skills Match (60%)**
-                    - ✅ **Education Fit (20%)**
-                    - ✅ **Title + Experience Match (15%)**
-                    - ⚖️ Other relevant preferences (5%)
-                    """)
+    matched_skills = row.get("Matched Skills", "")
+    missing_skills = row.get("Missing Skills", "")
+    matched_count = len(matched_skills.split(", ")) if pd.notna(matched_skills) and matched_skills.strip() else 0
+    missing_count = len(missing_skills.split(", ")) if pd.notna(missing_skills) and missing_skills.strip() else 0
 
-                st.markdown(" ")
+    st.markdown(f"- ✅ **{matched_count} matched skill(s)**")
+    if missing_count > 0:
+        st.markdown(f"- ❌ **{missing_count} missing skill(s):** `{missing_skills}`")
+
+    # Education relevance (mock logic – this assumes you’ll implement actual scoring later)
+    edu_match = "🎓 Your education matches the required level."  # Placeholder logic
+    st.markdown(f"- {edu_match}")
+
+    # Job title relevance (mock logic)
+    title_match = "💼 Your experience aligns with this job title."  # Placeholder logic
+    st.markdown(f"- {title_match}")
+
+    # Optional: raw score recap
+    st.markdown("""
+    - 📊 **Match Scoring Weight**  
+      - 60% Skills  
+      - 20% Education  
+      - 15% Title/Experience  
+      - 5% Other (e.g. location, language)
+    """)
 
         # Top Missing Skills Summary
         if "Missing Skills" in filtered_matches.columns:
@@ -163,15 +180,33 @@ with tab4:
                         st.markdown(f"❌ Missing Skills: `{row['Missing Skills']}`")
 
                     # Explanation
-                    with st.expander("📊 Why this match?"):
-                        st.markdown("""
-                        - ✅ **Skills Match (60%)**
-                        - ✅ **Education Fit (20%)**
-                        - ✅ **Title + Experience Match (15%)**
-                        - ⚖️ Other relevant preferences (5%)
-                        """)
+                   with st.expander("📊 Why this match?"):
+    matched_skills = row.get("Matched Skills", "")
+    missing_skills = row.get("Missing Skills", "")
+    matched_count = len(matched_skills.split(", ")) if pd.notna(matched_skills) and matched_skills.strip() else 0
+    missing_count = len(missing_skills.split(", ")) if pd.notna(missing_skills) and missing_skills.strip() else 0
 
-                    st.markdown(" ")
+    st.markdown(f"- ✅ **{matched_count} matched skill(s)**")
+    if missing_count > 0:
+        st.markdown(f"- ❌ **{missing_count} missing skill(s):** `{missing_skills}`")
+
+    # Education relevance (mock logic – this assumes you’ll implement actual scoring later)
+    edu_match = "🎓 Your education matches the required level."  # Placeholder logic
+    st.markdown(f"- {edu_match}")
+
+    # Job title relevance (mock logic)
+    title_match = "💼 Your experience aligns with this job title."  # Placeholder logic
+    st.markdown(f"- {title_match}")
+
+    # Optional: raw score recap
+    st.markdown("""
+    - 📊 **Match Scoring Weight**  
+      - 60% Skills  
+      - 20% Education  
+      - 15% Title/Experience  
+      - 5% Other (e.g. location, language)
+    """)
+
 
         else:
             st.warning("No matches found for this candidate.")
