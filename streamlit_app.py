@@ -51,6 +51,22 @@ with tab2:
         filtered_matches = filtered_matches[filtered_matches["Skill Match %"] >= min_match]
 
     st.dataframe(filtered_matches, use_container_width=True)
+    # Show top missing skills
+if "Missing Skills" in filtered_matches.columns:
+    st.markdown("### 🧠 Top Missing Skills to Improve Your Match")
+    missing_skills_series = (
+        filtered_matches["Missing Skills"]
+        .dropna()
+        .str.split(", ")
+        .explode()
+        .str.strip()
+        .value_counts()
+    )
+
+    if not missing_skills_series.empty:
+        st.write(missing_skills_series.head(5))
+    else:
+        st.info("No missing skills found in current filtered results.")
 
     # Add download button
     st.download_button(
