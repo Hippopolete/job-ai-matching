@@ -17,7 +17,7 @@ def load_data():
 candidates, matches_df, recruiter_view = load_data()
 
 # Create page tabs
-tab1, tab2, tab3 = st.tabs(["📋 Candidates", "✅ Final Matches", "📊 Recruiter View"])
+tab1, tab2, tab3, tab4 = st.tabs(["📋 Candidates", "✅ Final Matches", "📊 Recruiter View", "🎯 Best Jobs for Me"])
 
 # ------------------- TAB 1: Candidates -------------------
 with tab1:
@@ -84,10 +84,24 @@ with tab2:
         "filtered_matches.csv",
         "text/csv"
     )
-
-
-
 # ------------------- TAB 3: Recruiter View -------------------
 with tab3:
     st.subheader("📊 Recruiter View")
     st.dataframe(recruiter_view, use_container_width=True)
+
+# ------------------- TAB 4: Best Jobs for Me -------------------
+with tab4:
+    st.subheader("🎯 Best Jobs for Me")
+
+    candidate_list = matches_df["Candidate Name"].dropna().unique()
+    selected_name = st.selectbox("Select a candidate to view their top matched jobs", candidate_list)
+
+    if selected_name:
+        candidate_matches = matches_df[matches_df["Candidate Name"] == selected_name]
+        candidate_matches = candidate_matches.sort_values("Skill Match %", ascending=False)
+
+        if not candidate_matches.empty:
+            st.markdown(f"### Top Matches for **{selected_name}**")
+            st.dataframe(candidate_matches.reset_index(drop=True), use_container_width=True)
+        else:
+            st.warning("No matches found for this candidate.")
