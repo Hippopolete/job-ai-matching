@@ -68,14 +68,16 @@ with tab2:
             st.write(missing_skills_series.head(5))
         else:
             st.info("No missing skills found in current filtered results.")
-    # Suggest courses for top missing skills
-    st.markdown("### 🎓 Suggested Courses to Improve Skills")
 
-    if not missing_skills_series.empty:
-        for skill in missing_skills_series.head(5).index:
-            st.markdown(f"- [{skill.title()} Course on Coursera](https://www.coursera.org/search?query={skill})")
-    else:
-        st.info("No recommended courses to show.")
+    # Match breakdown explanation (only once, expandable)
+    with st.expander("ℹ️ How is the match score calculated?"):
+        st.markdown("""
+        The match score is calculated using:
+        - ✅ **Skills Match (60%)** – Number of matched vs. required skills, prioritized by exact matches  
+        - ✅ **Education Level (20%)** – Boost if your degree fits the job's required level  
+        - ✅ **Experience & Title (15%)** – Based on similarity between your role history and the job title  
+        - ⚖️ **Additional Factors (5%)** – Location, language preferences, or job-type relevance
+        """)
 
     # Add download button
     st.download_button(
@@ -84,6 +86,7 @@ with tab2:
         "filtered_matches.csv",
         "text/csv"
     )
+
 # ------------------- TAB 3: Recruiter View -------------------
 with tab3:
     st.subheader("📊 Recruiter View")
@@ -105,3 +108,4 @@ with tab4:
             st.dataframe(candidate_matches.reset_index(drop=True), use_container_width=True)
         else:
             st.warning("No matches found for this candidate.")
+
