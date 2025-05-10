@@ -74,33 +74,29 @@ with tab2:
                 if pd.notna(row["Missing Skills"]) and row["Missing Skills"].strip():
                     st.markdown(f"❌ Missing Skills: `{row['Missing Skills']}`")
 
-                # Expander for score logic
+                # Match explanation
                 with st.expander("📊 Why this match?"):
-    matched_skills = row.get("Matched Skills", "")
-    missing_skills = row.get("Missing Skills", "")
-    matched_count = len(matched_skills.split(", ")) if pd.notna(matched_skills) and matched_skills.strip() else 0
-    missing_count = len(missing_skills.split(", ")) if pd.notna(missing_skills) and missing_skills.strip() else 0
+                    matched_skills = row.get("Matched Skills", "")
+                    missing_skills = row.get("Missing Skills", "")
+                    matched_count = len(matched_skills.split(", ")) if pd.notna(matched_skills) and matched_skills.strip() else 0
+                    missing_count = len(missing_skills.split(", ")) if pd.notna(missing_skills) and missing_skills.strip() else 0
 
-    st.markdown(f"- ✅ **{matched_count} matched skill(s)**")
-    if missing_count > 0:
-        st.markdown(f"- ❌ **{missing_count} missing skill(s):** `{missing_skills}`")
+                    st.markdown(f"- ✅ **{matched_count} matched skill(s)**")
+                    if missing_count > 0:
+                        st.markdown(f"- ❌ **{missing_count} missing skill(s):** `{missing_skills}`")
 
-    # Education relevance (mock logic – this assumes you’ll implement actual scoring later)
-    edu_match = "🎓 Your education matches the required level."  # Placeholder logic
-    st.markdown(f"- {edu_match}")
+                    st.markdown("- 🎓 Your education matches the required level.")  # Placeholder
+                    st.markdown("- 💼 Your experience aligns with this job title.")  # Placeholder
 
-    # Job title relevance (mock logic)
-    title_match = "💼 Your experience aligns with this job title."  # Placeholder logic
-    st.markdown(f"- {title_match}")
+                    st.markdown("""
+                    - 📊 **Scoring Breakdown**
+                        - 60% Skills  
+                        - 20% Education  
+                        - 15% Title/Experience  
+                        - 5% Other preferences
+                    """)
 
-    # Optional: raw score recap
-    st.markdown("""
-    - 📊 **Match Scoring Weight**  
-      - 60% Skills  
-      - 20% Education  
-      - 15% Title/Experience  
-      - 5% Other (e.g. location, language)
-    """)
+                st.markdown(" ")
 
         # Top Missing Skills Summary
         if "Missing Skills" in filtered_matches.columns:
@@ -121,23 +117,24 @@ with tab2:
     else:
         st.warning("No matches found with the selected filters.")
 
-    # Match breakdown explanation (global)
+    # Global explanation
     with st.expander("ℹ️ How is the match score calculated?"):
         st.markdown("""
         The match score is calculated using:
-        - ✅ **Skills Match (60%)** – Number of matched vs. required skills, prioritized by exact matches  
-        - ✅ **Education Level (20%)** – Boost if your degree fits the job's required level  
-        - ✅ **Experience & Title (15%)** – Based on similarity between your role history and the job title  
-        - ⚖️ **Additional Factors (5%)** – Location, language preferences, or job-type relevance
+        - ✅ **Skills Match (60%)** – Based on exact and similar skill overlap
+        - ✅ **Education Level (20%)** – Degree relevance for the role
+        - ✅ **Title & Experience Match (15%)** – Job title and years of experience
+        - ⚖️ **Other factors (5%)** – Industry, location, language preferences
         """)
 
-    # Add download button
+    # Download button
     st.download_button(
         "⬇️ Download Filtered Matches",
         filtered_matches.to_csv(index=False),
         "filtered_matches.csv",
         "text/csv"
     )
+
 # ------------------- TAB 3: Recruiter View -------------------
 with tab3:
     st.subheader("📊 Recruiter View")
@@ -179,36 +176,32 @@ with tab4:
                     if pd.notna(row["Missing Skills"]) and row["Missing Skills"].strip():
                         st.markdown(f"❌ Missing Skills: `{row['Missing Skills']}`")
 
-                    # Explanation
-                   with st.expander("📊 Why this match?"):
-    matched_skills = row.get("Matched Skills", "")
-    missing_skills = row.get("Missing Skills", "")
-    matched_count = len(matched_skills.split(", ")) if pd.notna(matched_skills) and matched_skills.strip() else 0
-    missing_count = len(missing_skills.split(", ")) if pd.notna(missing_skills) and missing_skills.strip() else 0
+                    # Match explanation
+                    with st.expander("📊 Why this match?"):
+                        matched_skills = row.get("Matched Skills", "")
+                        missing_skills = row.get("Missing Skills", "")
+                        matched_count = len(matched_skills.split(", ")) if pd.notna(matched_skills) and matched_skills.strip() else 0
+                        missing_count = len(missing_skills.split(", ")) if pd.notna(missing_skills) and missing_skills.strip() else 0
 
-    st.markdown(f"- ✅ **{matched_count} matched skill(s)**")
-    if missing_count > 0:
-        st.markdown(f"- ❌ **{missing_count} missing skill(s):** `{missing_skills}`")
+                        st.markdown(f"- ✅ **{matched_count} matched skill(s)**")
+                        if missing_count > 0:
+                            st.markdown(f"- ❌ **{missing_count} missing skill(s):** `{missing_skills}`")
 
-    # Education relevance (mock logic – this assumes you’ll implement actual scoring later)
-    edu_match = "🎓 Your education matches the required level."  # Placeholder logic
-    st.markdown(f"- {edu_match}")
+                        st.markdown("- 🎓 Your education matches the required level.")
+                        st.markdown("- 💼 Your experience aligns with this job title.")
 
-    # Job title relevance (mock logic)
-    title_match = "💼 Your experience aligns with this job title."  # Placeholder logic
-    st.markdown(f"- {title_match}")
+                        st.markdown("""
+                        - 📊 **Scoring Breakdown**
+                            - 60% Skills  
+                            - 20% Education  
+                            - 15% Title/Experience  
+                            - 5% Other preferences
+                        """)
 
-    # Optional: raw score recap
-    st.markdown("""
-    - 📊 **Match Scoring Weight**  
-      - 60% Skills  
-      - 20% Education  
-      - 15% Title/Experience  
-      - 5% Other (e.g. location, language)
-    """)
-
+                    st.markdown(" ")
 
         else:
             st.warning("No matches found for this candidate.")
+
 
 
