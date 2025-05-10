@@ -49,8 +49,27 @@ with tab2:
     if "Skill Match %" in filtered_matches.columns:
         filtered_matches = filtered_matches[filtered_matches["Skill Match %"] >= min_match]
 
-    # Show filtered results
-    st.dataframe(filtered_matches, use_container_width=True)
+    # Show matches as individual cards
+for _, row in filtered_matches.iterrows():
+    with st.container():
+        st.markdown("---")  # separator
+
+        st.markdown(f"### 💼 {row['Job Title']}")
+        st.markdown(f"👤 Candidate: **{row['Candidate Name']}**")
+        st.markdown(f"📈 Skill Match: **{row['Skill Match %']}%**")
+
+        if pd.notna(row["Missing Skills"]) and row["Missing Skills"].strip():
+            st.markdown(f"❌ Missing Skills: `{row['Missing Skills']}`")
+
+        with st.expander("📊 Why this match?"):
+            st.markdown("""
+            - ✅ **Skills Match (60%)**
+            - ✅ **Education Fit (20%)**
+            - ✅ **Title + Experience Match (15%)**
+            - ⚖️ Other relevant preferences (5%)
+            """)
+
+        st.markdown(" ")
 
     # Show top missing skills
     if "Missing Skills" in filtered_matches.columns:
