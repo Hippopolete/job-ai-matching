@@ -70,6 +70,7 @@ candidates, jobs_df, recruiter_view = load_data()
 # ---- Compute Scores for All Candidates and Jobs ----
 results = []
 
+st.write("Current columns in matches_df:", matches_df.columns.tolist())
 for _, candidate in candidates.iterrows():
     for _, job in jobs_df.iterrows():
         if candidate.get("Candidate Name") and job.get("job_title"):
