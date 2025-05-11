@@ -63,14 +63,15 @@ def load_data():
 
 candidates, jobs_df, recruiter_view = load_data()
 
-# ---- Compute Scores ----
+# ---- Compute Scores for All Candidates and Jobs ----
 results = []
+
 for _, candidate in candidates.iterrows():
     for _, job in jobs_df.iterrows():
         if candidate.get("name") and job.get("job_title"):
             score_data = compute_match_score(candidate, job)
             results.append({
-                "Candidate Name": candidate["name"],
+                "Candidate Name": candidate["name"],               # ✅ REQUIRED column name
                 "Job Title": job["job_title"],
                 "Skill Match %": score_data["match_score"],
                 "Matched Skills": score_data["matched_skills"],
@@ -78,6 +79,7 @@ for _, candidate in candidates.iterrows():
             })
 
 matches_df = pd.DataFrame(results)
+
 
 # ---- Tabs ----
 tab1, tab2, tab3, tab4 = st.tabs(["📋 Candidates", "✅ Final Matches", "📊 Recruiter View", "🎯 Best Jobs for Me"])
