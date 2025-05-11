@@ -75,7 +75,7 @@ for _, candidate in candidates.iterrows():
         if candidate.get("name") and job.get("job_title"):
             score_data = compute_match_score(candidate, job)
             results.append({
-                "Candidate Name": candidate["name"],               # ✅ REQUIRED column name
+                "Candidate Name": candidate["Candidate Name"]
                 "Job Title": job["job_title"],
                 "Skill Match %": score_data["match_score"],
                 "Matched Skills": score_data["matched_skills"],
