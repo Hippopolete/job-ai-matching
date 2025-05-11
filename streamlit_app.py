@@ -5,7 +5,7 @@ import spacy
 from sentence_transformers import SentenceTransformer, util
 
 # Load NLP models once
-nlp = spacy.load("en_core_web_sm")  # lightweight, works on Streamlit Cloud
+nlp = spacy.blank("en")
 sbert = SentenceTransformer("all-MiniLM-L6-v2")  # fast + accurate transformer
 
 def compute_match_score(candidate, job):
