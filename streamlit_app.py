@@ -1,6 +1,12 @@
 import streamlit as st
 import pandas as pd
 from fuzzywuzzy import fuzz
+import spacy
+from sentence_transformers import SentenceTransformer, util
+
+# Load NLP models once
+nlp = spacy.load("en_core_web_lg")  # big model with word vectors
+sbert = SentenceTransformer("all-MiniLM-L6-v2")  # fast + accurate transformer
 
 def compute_match_score(candidate, job):
     total_score = 0
