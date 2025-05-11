@@ -59,6 +59,10 @@ def load_data():
     candidates = pd.read_csv("candidates.csv")
     jobs = pd.read_csv("final_matched_jobs.csv")
     recruiter_view = pd.read_csv("recruiter_view.csv")
+    
+    # ✅ Rename "name" to "Candidate Name"
+    candidates.rename(columns={"name": "Candidate Name"}, inplace=True)
+    
     return candidates, jobs, recruiter_view
 
 candidates, jobs_df, recruiter_view = load_data()
