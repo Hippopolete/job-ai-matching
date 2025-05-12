@@ -33,26 +33,23 @@ def compute_match_score(candidate, job):
     # --- Education Matching ---
     edu_score = 0
     if candidate.get("education_level") and job.get("required_education"):
-        if candidate["education_level"].strip().lower() == job["required_education"].strip().lower():
+        if candidate.get("education_level", "").strip().lower() == job.get("required_education", "").strip().lower():
             edu_score = 1
     total_score += edu_score * 20
 
     # --- Title Matching ---
     title_score = 0
     if candidate.get("current_title") and job.get("job_title"):
-        sim = fuzz.token_sort_ratio(candidate["current_title"], job["job_title"])
+        sim = fuzz.token_sort_ratio(candidate.get("current_title", ""), job.get("job_title", ""))
         title_score = sim / 100
     total_score += title_score * 15
-
-    # --- Placeholder: other factors ---
-    total_score += 0  # Location, language, etc.
 
     return {
         "match_score": round(total_score, 2),
         "matched_skills": ", ".join(matched_skills),
         "missing_skills": ", ".join(missing_skills)
     }
-
+    
 # ---- Load Data ----
 @st.cache_data
 def load_data():
@@ -70,24 +67,29 @@ candidates, jobs_df, recruiter_view = load_data()
 # ---- Compute Scores for All Candidates and Jobs ----
 results = []
 
-# 👀 Confirm candidate column names
+# Debug: check column names
 st.write("🧾 Candidates columns:", candidates.columns.tolist())
+st.write("🧾 Jobs columns:", jobs_df.columns.tolist())
 
 for _, candidate in candidates.iterrows():
     candidate_name = candidate.get("Candidate Name") or candidate.get("name")
     for _, job in jobs_df.iterrows():
         if candidate_name and job.get("job_title"):
-            score_data = compute_match_score(candidate, job)
-            results.append({
-                "Candidate Name": candidate_name,
-                "Job Title": job["job_title"],
-                "Skill Match %": score_data["match_score"],
-                "Matched Skills": score_data["matched_skills"],
-                "Missing Skills": score_data["missing_skills"]
-            })
+            try:
+                score_data = compute_match_score(candidate, job)
+                results.append({
+                    "Candidate Name": candidate_name,
+                    "Job Title": job["job_title"],
+                    "Skill Match %": score_data["match_score"],
+                    "Matched Skills": score_data["matched_skills"],
+                    "Missing Skills": score_data["missing_skills"]
+                })
+            except Exception as e:
+                st.error(f"❌ Error scoring {candidate_name} vs {job.get('job_title', 'Unknown')}: {e}")
 
 matches_df = pd.DataFrame(results)
 
+# Final debug after processing
 st.write("✅ Columns in matches_df:", matches_df.columns.tolist())
 st.dataframe(matches_df.head())
 
