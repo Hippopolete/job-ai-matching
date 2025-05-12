@@ -105,20 +105,24 @@ with tab1:
 with tab2:
     st.subheader("✅ Final Matched Jobs")
 
-with st.sidebar:
-    st.markdown("## 🔎 Filters")
+    with st.sidebar:
+        st.markdown("## 🔎 Filters")
 
-    if "Candidate Name" in matches_df.columns:
-        candidate_names = matches_df["Candidate Name"].dropna().unique()
-    else:
-        st.error("❌ 'Candidate Name' column not found in matches_df.")
-        st.stop()
+        if "Candidate Name" in matches_df.columns:
+            candidate_names = matches_df["Candidate Name"].dropna().unique()
+            selected_candidates = st.multiselect("👤 Filter by Candidate Name", candidate_names)
+        else:
+            st.error("❌ 'Candidate Name' column not found in matches_df.")
+            st.stop()
 
-    if "Job Title" in matches_df.columns:
-        job_titles = matches_df["Job Title"].dropna().unique()
-    else:
-        st.error("❌ 'Job Title' column not found in matches_df.")
-        st.stop()
+        if "Job Title" in matches_df.columns:
+            job_titles = matches_df["Job Title"].dropna().unique()
+            selected_jobs = st.multiselect("💼 Filter by Job Title", job_titles)
+        else:
+            st.error("❌ 'Job Title' column not found in matches_df.")
+            st.stop()
+
+        min_match = st.slider("📈 Minimum Skill Match %", 0, 100, 20)
 
     filtered_matches = matches_df.copy()
     if selected_candidates:
@@ -136,7 +140,10 @@ with st.sidebar:
 
                 score = row["Skill Match %"]
                 color = "green" if score >= 70 else "orange" if score >= 40 else "red"
-                st.markdown(f"📈 Skill Match: <span style='color:{color}; font-weight:bold'>{score}%</span>", unsafe_allow_html=True)
+                st.markdown(
+                    f"📈 Skill Match: <span style='color:{color}; font-weight:bold'>{score}%</span>",
+                    unsafe_allow_html=True
+                )
 
                 if row["Missing Skills"]:
                     st.markdown(f"❌ Missing Skills: `{row['Missing Skills']}`")
