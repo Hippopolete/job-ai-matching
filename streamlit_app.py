@@ -103,7 +103,7 @@ with tab1:
 with tab2:
     st.subheader("✅ Final Matched Jobs")
 
-   with st.sidebar:
+with st.sidebar:
     st.markdown("## 🔎 Filters")
 
     if "Candidate Name" in matches_df.columns:
