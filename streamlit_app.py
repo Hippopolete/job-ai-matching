@@ -1,6 +1,33 @@
 import streamlit as st
 import pandas as pd
 from fuzzywuzzy import fuzz
+import os
+
+# ---- Streamlit Setup ----
+st.set_page_config(page_title="Job AI Matching", layout="wide")
+st.title("💼 AI Job Matching Dashboard")
+
+# ---- File Check ----
+st.subheader("🗂 File Check")
+
+# Show current working directory
+st.write("📁 Current working directory:", os.getcwd())
+st.write("📂 Top-level files & folders:", os.listdir())
+
+# Check if datasets/processed/combined_job_listings.csv exists
+base_path = "datasets/processed/"
+file_name = "combined_job_listings.csv"
+full_path = os.path.join(base_path, file_name)
+
+if os.path.exists(base_path):
+    st.write(f"📂 Contents of `{base_path}`:", os.listdir(base_path))
+else:
+    st.error(f"❌ Folder `{base_path}` does not exist!")
+
+if os.path.exists(full_path):
+    st.success(f"✅ File `{full_path}` found!")
+else:
+    st.error(f"❌ File `{full_path}` NOT found!")
 
 # ---- Streamlit Setup ----
 st.set_page_config(page_title="Job AI Matching", layout="wide")
@@ -54,7 +81,7 @@ def compute_match_score(candidate, job):
 @st.cache_data
 def load_data():
     candidates = pd.read_csv("candidates.csv")
-    jobs = pd.read_csv("datasets/processed/combined_job_listings.csv")  # <- real jobs!
+    jobs = pd.read_csv("combined_job_listings.csv")
     recruiter_view = pd.read_csv("recruiter_view.csv")
 
     candidates.rename(columns={"name": "Candidate Name"}, inplace=True)
