@@ -66,26 +66,27 @@ candidates, jobs_df, recruiter_view = load_data()
 
 results = []
 
+# 👇 Check if jobs_df is loaded correctly
+st.write("📄 Preview of jobs_df:")
+st.dataframe(jobs_df.head())
+
 for _, candidate in candidates.iterrows():
-    st.write("👉 Checking candidate:", candidate)
-
     candidate_name = candidate.get("Candidate Name")
-    skills = candidate.get("Skills")
-    title = candidate.get("Preferred Job Title")
-
-    if not candidate_name or not skills:
-        st.warning(f"Skipping candidate with missing name or skills: {candidate}")
+    if not candidate_name:
         continue
 
     for _, job in jobs_df.iterrows():
         job_title = job.get("job_title")
-        required_skills = job.get("required_skills")
-
-        if not job_title or not required_skills:
+        if not job_title:
             continue
+
+        # For debug: log every job/candidate pairing
+        st.write(f"🔍 Scoring: {candidate_name} vs {job_title}")
 
         try:
             score_data = compute_match_score(candidate, job)
+            st.write("✅ Score Data:", score_data)
+
             results.append({
                 "Candidate Name": candidate_name,
                 "Job Title": job_title,
@@ -93,15 +94,13 @@ for _, candidate in candidates.iterrows():
                 "Matched Skills": score_data["matched_skills"],
                 "Missing Skills": score_data["missing_skills"]
             })
+
         except Exception as e:
-            st.error(f"❌ Failed: {candidate_name} vs {job_title} → {e}")
+            st.error(f"❌ Error scoring {candidate_name} vs {job_title}: {e}")
 
 matches_df = pd.DataFrame(results)
-
-# Debug preview
-st.success("✅ Matching complete.")
-st.write("📊 Columns in matches_df:", matches_df.columns.tolist())
-st.dataframe(matches_df.head())
+st.write("✅ Final matches_df shape:", matches_df.shape)
+st.dataframe(matches_df)
 
 # ---- Tabs ----
 tab1, tab2, tab3, tab4 = st.tabs(["📋 Candidates", "✅ Final Matches", "📊 Recruiter View", "🎯 Best Jobs for Me"])
