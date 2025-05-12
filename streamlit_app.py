@@ -88,9 +88,8 @@ for _, candidate in candidates.iterrows():
 
 matches_df = pd.DataFrame(results)
 
-# ✅ Debug columns
 st.write("✅ Columns in matches_df:", matches_df.columns.tolist())
-
+st.dataframe(matches_df.head())
 
 # ---- Tabs ----
 tab1, tab2, tab3, tab4 = st.tabs(["📋 Candidates", "✅ Final Matches", "📊 Recruiter View", "🎯 Best Jobs for Me"])
@@ -104,13 +103,20 @@ with tab1:
 with tab2:
     st.subheader("✅ Final Matched Jobs")
 
-    with st.sidebar:
-        st.markdown("## 🔎 Filters")
+   with st.sidebar:
+    st.markdown("## 🔎 Filters")
+
+    if "Candidate Name" in matches_df.columns:
         candidate_names = matches_df["Candidate Name"].dropna().unique()
+    else:
+        st.error("❌ 'Candidate Name' column not found in matches_df.")
+        st.stop()
+
+    if "Job Title" in matches_df.columns:
         job_titles = matches_df["Job Title"].dropna().unique()
-        selected_candidates = st.multiselect("👤 Filter by Candidate Name", candidate_names)
-        selected_jobs = st.multiselect("💼 Filter by Job Title", job_titles)
-        min_match = st.slider("📈 Minimum Skill Match %", 0, 100, 20)
+    else:
+        st.error("❌ 'Job Title' column not found in matches_df.")
+        st.stop()
 
     filtered_matches = matches_df.copy()
     if selected_candidates:
