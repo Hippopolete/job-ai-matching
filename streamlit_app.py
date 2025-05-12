@@ -3,9 +3,9 @@ import pandas as pd
 from fuzzywuzzy import fuzz
 import os
 
-# ---- Streamlit Setup ----
 st.set_page_config(page_title="Job AI Matching", layout="wide")
 st.title("💼 AI Job Matching Dashboard")
+
 
 # ---- File Check ----
 st.subheader("🗂 File Check")
