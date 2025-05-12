@@ -64,22 +64,24 @@ def load_data():
 
 candidates, jobs_df, recruiter_view = load_data()
 
-# ---- Compute Scores for All Candidates and Jobs ----
 results = []
 
-st.write("🧾 Candidates columns:", candidates.columns.tolist())
-st.write("🧾 Jobs columns:", jobs_df.columns.tolist())
-
 for _, candidate in candidates.iterrows():
-    candidate_name = candidate.get("Candidate Name") or candidate.get("name")
-    
-    if not candidate_name:
-        st.warning("⚠️ Candidate without a name found, skipping...")
+    st.write("👉 Checking candidate:", candidate)
+
+    candidate_name = candidate.get("Candidate Name")
+    skills = candidate.get("Skills")
+    title = candidate.get("Preferred Job Title")
+
+    if not candidate_name or not skills:
+        st.warning(f"Skipping candidate with missing name or skills: {candidate}")
         continue
 
     for _, job in jobs_df.iterrows():
         job_title = job.get("job_title")
-        if not job_title:
+        required_skills = job.get("required_skills")
+
+        if not job_title or not required_skills:
             continue
 
         try:
@@ -92,12 +94,13 @@ for _, candidate in candidates.iterrows():
                 "Missing Skills": score_data["missing_skills"]
             })
         except Exception as e:
-            st.error(f"❌ Error matching {candidate_name} with {job_title}: {e}")
+            st.error(f"❌ Failed: {candidate_name} vs {job_title} → {e}")
 
 matches_df = pd.DataFrame(results)
 
-# Show debug preview
-st.write("✅ Columns in matches_df:", matches_df.columns.tolist())
+# Debug preview
+st.success("✅ Matching complete.")
+st.write("📊 Columns in matches_df:", matches_df.columns.tolist())
 st.dataframe(matches_df.head())
 
 # ---- Tabs ----
