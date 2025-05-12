@@ -82,6 +82,9 @@ for _, candidate in candidates.iterrows():
             st.error(f"❌ Error scoring {candidate_name} vs {job_title}: {e}")
 
 matches_df = pd.DataFrame(results)
+st.write("📊 matches_df preview:", matches_df.head())
+st.write("🧮 Length of matches_df:", len(matches_df))
+
 st.success(f"✅ Matching complete. {len(matches_df)} matches.")
 st.dataframe(matches_df)
 
