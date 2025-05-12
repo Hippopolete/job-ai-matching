@@ -67,29 +67,36 @@ candidates, jobs_df, recruiter_view = load_data()
 # ---- Compute Scores for All Candidates and Jobs ----
 results = []
 
-# Debug: check column names
 st.write("🧾 Candidates columns:", candidates.columns.tolist())
 st.write("🧾 Jobs columns:", jobs_df.columns.tolist())
 
 for _, candidate in candidates.iterrows():
     candidate_name = candidate.get("Candidate Name") or candidate.get("name")
+    
+    if not candidate_name:
+        st.warning("⚠️ Candidate without a name found, skipping...")
+        continue
+
     for _, job in jobs_df.iterrows():
-        if candidate_name and job.get("job_title"):
-            try:
-                score_data = compute_match_score(candidate, job)
-                results.append({
-                    "Candidate Name": candidate_name,
-                    "Job Title": job["job_title"],
-                    "Skill Match %": score_data["match_score"],
-                    "Matched Skills": score_data["matched_skills"],
-                    "Missing Skills": score_data["missing_skills"]
-                })
-            except Exception as e:
-                st.error(f"❌ Error scoring {candidate_name} vs {job.get('job_title', 'Unknown')}: {e}")
+        job_title = job.get("job_title")
+        if not job_title:
+            continue
+
+        try:
+            score_data = compute_match_score(candidate, job)
+            results.append({
+                "Candidate Name": candidate_name,
+                "Job Title": job_title,
+                "Skill Match %": score_data["match_score"],
+                "Matched Skills": score_data["matched_skills"],
+                "Missing Skills": score_data["missing_skills"]
+            })
+        except Exception as e:
+            st.error(f"❌ Error matching {candidate_name} with {job_title}: {e}")
 
 matches_df = pd.DataFrame(results)
 
-# Final debug after processing
+# Show debug preview
 st.write("✅ Columns in matches_df:", matches_df.columns.tolist())
 st.dataframe(matches_df.head())
 
