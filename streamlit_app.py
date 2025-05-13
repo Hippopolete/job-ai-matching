@@ -53,16 +53,20 @@ def load_data():
     jobs = pd.read_csv("final_matched_jobs.csv")
     recruiter_view = pd.read_csv("recruiter_view.csv")
 
-    # Normalize naming
-    if "name" in candidates.columns:
-        candidates.rename(columns={"name": "Candidate Name"}, inplace=True)
+    # ✅ Make sure 'Candidate Name' column exists
+    if "Candidate Name" not in candidates.columns:
+        if "name" in candidates.columns:
+            candidates.rename(columns={"name": "Candidate Name"}, inplace=True)
+        else:
+            st.error("❌ Could not find a 'name' or 'Candidate Name' column in candidates.csv")
+            st.stop()
 
     return candidates, jobs, recruiter_view
 
-# ---- Load & Match ----
 candidates, jobs_df, recruiter_view = load_data()
-results = []
 
+# ---- Compute Match Scores ----
+results = []
 for _, candidate in candidates.iterrows():
     candidate_name = candidate.get("Candidate Name")
     if not candidate_name:
@@ -71,16 +75,23 @@ for _, candidate in candidates.iterrows():
         job_title = job.get("job_title")
         if not job_title:
             continue
-        score_data = compute_match_score(candidate, job)
-        results.append({
-            "Candidate Name": candidate_name,
-            "Job Title": job_title,
-            "Skill Match %": score_data["match_score"],
-            "Matched Skills": score_data["matched_skills"],
-            "Missing Skills": score_data["missing_skills"]
-        })
+        try:
+            score_data = compute_match_score(candidate, job)
+            results.append({
+                "Candidate Name": candidate_name,
+                "Job Title": job_title,
+                "Skill Match %": score_data["match_score"],
+                "Matched Skills": score_data["matched_skills"],
+                "Missing Skills": score_data["missing_skills"]
+            })
+        except Exception as e:
+            st.error(f"❌ Error scoring {candidate_name} vs {job_title}: {e}")
 
 matches_df = pd.DataFrame(results)
+
+# ✅ Debug column names to verify no future KeyError
+st.write("🧪 Columns in matches_df:", matches_df.columns.tolist())
+st.write("📊 Preview of matches_df:", matches_df.head())
 
 # ---- Tabs ----
 tab1, tab2, tab3, tab4 = st.tabs(["📋 Candidates", "✅ Final Matches", "📊 Recruiter View", "🎯 Best Jobs for Me"])
