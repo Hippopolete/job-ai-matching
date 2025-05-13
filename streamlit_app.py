@@ -1,11 +1,9 @@
 import streamlit as st
 import pandas as pd
 from fuzzywuzzy import fuzz
-import os
 
-# ---- MUST BE FIRST ----
+# ---- Streamlit Setup ----
 st.set_page_config(page_title="Job AI Matching", layout="wide")
-
 st.title("💼 AI Job Matching Dashboard")
 
 # ---- Match Score Function ----
@@ -52,15 +50,19 @@ def compute_match_score(candidate, job):
 @st.cache_data
 def load_data():
     candidates = pd.read_csv("candidates.csv")
-    jobs = pd.read_csv("final_matched_jobs.csv")  # ✅ the file that exists in your repo
+    jobs = pd.read_csv("final_matched_jobs.csv")
     recruiter_view = pd.read_csv("recruiter_view.csv")
-    candidates.rename(columns={"name": "Candidate Name"}, inplace=True)
+
+    # Normalize naming
+    if "name" in candidates.columns:
+        candidates.rename(columns={"name": "Candidate Name"}, inplace=True)
+
     return candidates, jobs, recruiter_view
 
+# ---- Load & Match ----
 candidates, jobs_df, recruiter_view = load_data()
-
-# ---- Compute Match Scores ----
 results = []
+
 for _, candidate in candidates.iterrows():
     candidate_name = candidate.get("Candidate Name")
     if not candidate_name:
@@ -69,53 +71,34 @@ for _, candidate in candidates.iterrows():
         job_title = job.get("job_title")
         if not job_title:
             continue
-        try:
-            score_data = compute_match_score(candidate, job)
-            results.append({
-                "Candidate Name": candidate_name,
-                "Job Title": job_title,
-                "Skill Match %": score_data["match_score"],
-                "Matched Skills": score_data["matched_skills"],
-                "Missing Skills": score_data["missing_skills"]
-            })
-        except Exception as e:
-            st.error(f"❌ Error scoring {candidate_name} vs {job_title}: {e}")
+        score_data = compute_match_score(candidate, job)
+        results.append({
+            "Candidate Name": candidate_name,
+            "Job Title": job_title,
+            "Skill Match %": score_data["match_score"],
+            "Matched Skills": score_data["matched_skills"],
+            "Missing Skills": score_data["missing_skills"]
+        })
 
 matches_df = pd.DataFrame(results)
-st.write("📊 matches_df preview:", matches_df.head())
-st.write("🧮 Length of matches_df:", len(matches_df))
-
-st.success(f"✅ Matching complete. {len(matches_df)} matches.")
-st.dataframe(matches_df)
 
 # ---- Tabs ----
 tab1, tab2, tab3, tab4 = st.tabs(["📋 Candidates", "✅ Final Matches", "📊 Recruiter View", "🎯 Best Jobs for Me"])
 
-# TAB 1
+# TAB 1: Candidates
 with tab1:
     st.subheader("📋 Candidates")
     st.dataframe(candidates, use_container_width=True)
 
-# TAB 2
+# TAB 2: Final Matches
 with tab2:
     st.subheader("✅ Final Matched Jobs")
     with st.sidebar:
         st.markdown("## 🔎 Filters")
-
-        if "Candidate Name" in matches_df.columns:
-            candidate_names = matches_df["Candidate Name"].dropna().unique()
-            selected_candidates = st.multiselect("👤 Filter by Candidate Name", candidate_names)
-        else:
-            st.error("❌ 'Candidate Name' column not found in matches_df.")
-            st.stop()
-
-        if "Job Title" in matches_df.columns:
-            job_titles = matches_df["Job Title"].dropna().unique()
-            selected_jobs = st.multiselect("💼 Filter by Job Title", job_titles)
-        else:
-            st.error("❌ 'Job Title' column not found in matches_df.")
-            st.stop()
-
+        candidate_names = matches_df["Candidate Name"].dropna().unique()
+        job_titles = matches_df["Job Title"].dropna().unique()
+        selected_candidates = st.multiselect("👤 Filter by Candidate Name", candidate_names)
+        selected_jobs = st.multiselect("💼 Filter by Job Title", job_titles)
         min_match = st.slider("📈 Minimum Skill Match %", 0, 100, 20)
 
     filtered_matches = matches_df.copy()
@@ -131,11 +114,17 @@ with tab2:
                 st.markdown("---")
                 st.markdown(f"### 💼 {row['Job Title']}")
                 st.markdown(f"👤 Candidate: **{row['Candidate Name']}**")
+
                 score = row["Skill Match %"]
                 color = "green" if score >= 70 else "orange" if score >= 40 else "red"
-                st.markdown(f"📈 Skill Match: <span style='color:{color}; font-weight:bold'>{score}%</span>", unsafe_allow_html=True)
+                st.markdown(
+                    f"📈 Skill Match: <span style='color:{color}; font-weight:bold'>{score}%</span>",
+                    unsafe_allow_html=True
+                )
+
                 if row["Missing Skills"]:
                     st.markdown(f"❌ Missing Skills: `{row['Missing Skills']}`")
+
                 with st.expander("📊 Why this match?"):
                     matched = row["Matched Skills"].split(", ") if row["Matched Skills"] else []
                     missing = row["Missing Skills"].split(", ") if row["Missing Skills"] else []
@@ -145,20 +134,20 @@ with tab2:
                     st.markdown("- 🎓 Education and title relevance factored in.")
                     st.markdown("""
                     - 📊 **Scoring Breakdown**
-                        - 60% Skills
-                        - 20% Education
-                        - 15% Title/Experience
+                        - 60% Skills  
+                        - 20% Education  
+                        - 15% Title/Experience  
                         - 5% Other preferences
                     """)
     else:
         st.warning("No matches found with the selected filters.")
 
-# TAB 3
+# TAB 3: Recruiter View
 with tab3:
     st.subheader("📊 Recruiter View")
     st.dataframe(recruiter_view, use_container_width=True)
 
-# TAB 4
+# TAB 4: Best Jobs for Me
 with tab4:
     st.subheader("🎯 Best Jobs for Me")
     candidate_list = matches_df["Candidate Name"].dropna().unique()
@@ -183,9 +172,9 @@ with tab4:
                     st.markdown("- 🎓 Education and title relevance factored in.")
                     st.markdown("""
                     - 📊 **Scoring Breakdown**
-                        - 60% Skills
-                        - 20% Education
-                        - 15% Title/Experience
+                        - 60% Skills  
+                        - 20% Education  
+                        - 15% Title/Experience  
                         - 5% Other preferences
                     """)
 
