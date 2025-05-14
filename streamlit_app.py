@@ -45,6 +45,32 @@ def compute_match_score(candidate, job):
 st.set_page_config(page_title="Job AI Matching", layout="wide")
 st.title("💼 AI Job Matching Dashboard")
 
+# Add this early in your script after st.set_page_config
+st.markdown("""
+    <style>
+        .main {
+            background-color: #121212;
+            color: white;
+        }
+        .stSlider > div[data-baseweb="slider"] {
+            background-color: #1db954;  /* Spotify green */
+        }
+        .stSelectbox, .stMultiSelect, .stButton {
+            background-color: #1c1c1c;
+        }
+        .stDataFrame {
+            background-color: #1c1c1c;
+        }
+        .stMarkdown, .stExpander {
+            font-family: 'Helvetica Neue', sans-serif;
+        }
+        .stMarkdown h2 {
+            border-left: 4px solid #1db954;
+            padding-left: 12px;
+        }
+    </style>
+""", unsafe_allow_html=True)
+
 # Load datasets
 @st.cache_data
 def load_data():
@@ -192,29 +218,29 @@ with tab4:
         candidate_matches = candidate_matches.sort_values("Skill Match %", ascending=False)
 
         if not candidate_matches.empty:
-            st.markdown(f"### Top Matches for **{selected_name}**")
+            st.markdown(f"## 🎧 Top Matches for **{selected_name}**")
 
             for _, row in candidate_matches.iterrows():
                 with st.container():
                     st.markdown("---")
-                    st.markdown(f"### 💼 {row['Job Title']}")
+                    st.markdown(f"### 💼 **{row['Job Title']}**")
 
                     # Color-coded Skill Match %
                     match_score = row["Skill Match %"]
                     if match_score >= 70:
-                        color = "green"
+                        color = "lime"
                     elif match_score >= 40:
                         color = "orange"
                     else:
                         color = "red"
                     st.markdown(
-                        f"📈 Skill Match: <span style='color:{color}; font-weight:bold'>{match_score}%</span>",
+                        f"📈 Skill Match: <span style='color:{color}; font-weight:bold'>{match_score:.1f}%</span>",
                         unsafe_allow_html=True
                     )
 
                     # Missing Skills
                     if pd.notna(row["Missing Skills"]) and row["Missing Skills"].strip():
-                        st.markdown(f"❌ Missing Skills: {row['Missing Skills']}")
+                        st.markdown(f"❌ Missing Skills: `{row['Missing Skills']}`")
 
                     # Match explanation
                     with st.expander("📊 Why this match?"):
@@ -225,7 +251,7 @@ with tab4:
 
                         st.markdown(f"- ✅ **{matched_count} matched skill(s)**")
                         if missing_count > 0:
-                            st.markdown(f"- ❌ **{missing_count} missing skill(s):** {missing_skills}")
+                            st.markdown(f"- ❌ **{missing_count} missing skill(s):** `{missing_skills}`")
 
                         st.markdown("- 🎓 Your education matches the required level.")
                         st.markdown("- 💼 Your experience aligns with this job title.")
@@ -242,3 +268,4 @@ with tab4:
 
         else:
             st.warning("No matches found for this candidate.")
+
