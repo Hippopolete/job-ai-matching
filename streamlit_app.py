@@ -266,6 +266,35 @@ with tab4:
 
                     st.markdown(" ")
 
+            # ---------------- Skill Gap Suggestions ----------------
+            st.markdown("### 🧠 Improve Your Profile")
+
+            # Filter jobs with 40% to 70% match – considered almost matches
+            improvement_matches = candidate_matches[
+                (candidate_matches["Skill Match %"] >= 40) &
+                (candidate_matches["Skill Match %"] < 70)
+            ]
+
+            if not improvement_matches.empty and "Missing Skills" in improvement_matches.columns:
+                all_missing_skills = (
+                    improvement_matches["Missing Skills"]
+                    .dropna()
+                    .str.split(", ")
+                    .explode()
+                    .str.strip()
+                    .value_counts()
+                )
+
+                if not all_missing_skills.empty:
+                    st.markdown("To increase your chances, consider improving these skills:")
+                    for skill, count in all_missing_skills.head(5).items():
+                        st.markdown(f"- 🔧 `{skill}` (missing in {count} of your matches)")
+                else:
+                    st.info("✅ No major missing skills in your top matches.")
+            else:
+                st.info("Not enough near-matches to suggest improvements.")
+
         else:
             st.warning("No matches found for this candidate.")
+
 
