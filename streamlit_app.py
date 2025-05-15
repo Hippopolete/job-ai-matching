@@ -203,8 +203,43 @@ with tab2:
 
 # ------------------- TAB 3: Recruiter View -------------------
 with tab3:
-    st.subheader("📊 Recruiter View")
-    st.dataframe(recruiter_view, use_container_width=True)
+    st.subheader("💼 Recruiter View – Best Candidates per Job")
+
+    # Filter job titles in sidebar
+    with st.sidebar:
+        st.markdown("## 🎯 Recruiter Filters")
+        job_options = matches_df["Job Title"].dropna().unique()
+        selected_job_titles = st.multiselect("📌 Filter by Job Title", job_options)
+
+    grouped = matches_df.copy()
+    if selected_job_titles:
+        grouped = grouped[grouped["Job Title"].isin(selected_job_titles)]
+
+    if not grouped.empty:
+        for job_title in grouped["Job Title"].unique():
+            job_group = grouped[grouped["Job Title"] == job_title]
+            job_group = job_group.sort_values("Skill Match %", ascending=False)
+
+            st.markdown(f"### 💼 {job_title}")
+            for _, row in job_group.iterrows():
+                with st.container():
+                    st.markdown(f"**👤 {row['Candidate Name']}**")
+                    score = row["Skill Match %"]
+                    color = "green" if score >= 70 else "orange" if score >= 40 else "red"
+                    st.markdown(
+                        f"📈 Match Score: <span style='color:{color}; font-weight:bold'>{score:.1f}%</span>",
+                        unsafe_allow_html=True
+                    )
+
+                    if pd.notna(row["Matched Skills"]) and row["Matched Skills"].strip():
+                        st.markdown(f"✅ Matched Skills: `{row['Matched Skills']}`")
+
+                    if pd.notna(row["Missing Skills"]) and row["Missing Skills"].strip():
+                        st.markdown(f"❌ Missing Skills: `{row['Missing Skills']}`")
+
+                    st.markdown("---")
+    else:
+        st.warning("No data to display. Try selecting a job title on the left.")
 
 # ------------------- TAB 4: Best Jobs for Me -------------------
 with tab4:
