@@ -235,23 +235,26 @@ with tab3:
                     if pd.notna(row["Missing Skills"]) and row["Missing Skills"].strip():
                         st.markdown(f"❌ Missing Skills: `{row['Missing Skills']}`")
 
-                    with st.expander("📊 Match Breakdown"):
-                        matched_skills = row.get("Matched Skills", "")
-                        missing_skills = row.get("Missing Skills", "")
-                        matched_count = len(matched_skills.split(", ")) if matched_skills else 0
-                        missing_count = len(missing_skills.split(", ")) if missing_skills else 0
+                with st.expander("📊 Why this match?"):
+                     matched_skills = row.get("Matched Skills", "")
+                     missing_skills = row.get("Missing Skills", "")
+                     matched_count = len(str(matched_skills).split(", ")) if pd.notna(matched_skills) and matched_skills.strip() else 0
+                     missing_count = len(str(missing_skills).split(", ")) if pd.notna(missing_skills) and missing_skills.strip() else 0
 
-                        st.markdown(f"- ✅ **{matched_count} matched skill(s)**")
-                        if missing_count > 0:
-                            st.markdown(f"- ❌ **{missing_count} missing skill(s):** `{missing_skills}`")
-                        st.markdown("- 🎓 Candidate’s education and experience match this role.")
-                        st.markdown("""
-                        - 📊 **Scoring Breakdown**
-                            - 60% Skills  
-                            - 20% Education  
-                            - 15% Title/Experience  
-                            - 5% Other preferences
-                        """)
+                     st.markdown(f"- ✅ **{matched_count} matched skill(s)**")
+                     if missing_count > 0:
+                     st.markdown(f"- ❌ **{missing_count} missing skill(s):** `{missing_skills}`")
+
+                     st.markdown("- 🎓 Your education matches the required level.")
+                     st.markdown("- 💼 Your experience aligns with this job title.")
+
+                     st.markdown("""
+                     - 📊 **Scoring Breakdown**
+                         - 60% Skills  
+                         - 20% Education  
+                         - 15% Title/Experience  
+                         - 5% Other preferences
+                     """)
 
         else:
             st.warning("No matches found for this job.")
