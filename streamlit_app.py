@@ -242,8 +242,8 @@ with tab3:
                      missing_count = len(str(missing_skills).split(", ")) if pd.notna(missing_skills) and missing_skills.strip() else 0
 
                      st.markdown(f"- ✅ **{matched_count} matched skill(s)**")
-                 if missing_count > 0:
-                     st.markdown(f"- ❌ **{missing_count} missing skill(s):** `{missing_skills}`")
+               if missing_count > 0:
+                   st.markdown(f"❌ **{missing_count} missing skill(s):** `{missing_skills}`")
 
                      st.markdown("- 🎓 Your education matches the required level.")
                      st.markdown("- 💼 Your experience aligns with this job title.")
