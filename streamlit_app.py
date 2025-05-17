@@ -256,10 +256,15 @@ with tab3:
                 continue
             if candidate.get("Experience (Years)", 0) < min_exp:
                 continue
+                
+                with st.expander("🧾 View Full Profile"):
+                    st.markdown(f"- 👤 **Name:** {candidate.get('Candidate Name', 'N/A')}")
+                    st.markdown(f"- 🧠 **Skills:** {candidate.get('Skills', 'N/A')}")
+                    st.markdown(f"- 🎓 **Education Level:** {candidate.get('Education Level', 'N/A')}")
+                    st.markdown(f"- 🧪 **Experience (Years):** {candidate.get('Experience (Years)', 'N/A')}")
+                    st.markdown(f"- 💼 **Preferred Title:** {candidate.get('Preferred Job Title', 'N/A')}")
+                    st.markdown(f"- 📄 **CV Summary:** _(Coming soon — auto-extracted from uploaded PDF)_")
 
-            with st.container():
-                st.markdown("---")
-                st.markdown(f"### 👤 {candidate_name}")
 
                 score = row["Skill Match %"]
                 color = "lime" if score >= 70 else "orange" if score >= 40 else "red"
