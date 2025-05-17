@@ -260,7 +260,6 @@ with tab3:
         else:
             st.warning("No candidates match your filters.")
 
-
 # ------------------- TAB 4: Best Jobs for Me -------------------
 with tab4:
     st.subheader("🎯 Best Jobs for Me")
