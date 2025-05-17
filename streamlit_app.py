@@ -232,7 +232,7 @@ with tab3:
             with st.sidebar:
                 st.markdown("### 🧑‍💼 Recruiter Filters")
 
-                min_score = st.slider("📈 Minimum Skill Match %", 0, 100, 20)
+                min_score = st.slider("📈 Minimum Skill Match % (Recruiter Filter)", 0, 100, 20)
 
                 if "Education Level" in job_matches.columns:
                     edu_levels = job_matches["Education Level"].dropna().unique()
