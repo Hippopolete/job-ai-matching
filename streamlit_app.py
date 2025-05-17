@@ -206,7 +206,7 @@ with tab3:
     st.subheader("📊 Recruiter View – Best Candidates per Job")
 
     # Step 1: Job selection
-    job_list = matches_df["Job Title"].dropna().unique()
+    job_list = matches_df["job_title"].dropna().unique()  # or the correct name you see
     selected_job = st.selectbox("Select a job to view top candidates", job_list)
 
     # Recruiter filters
@@ -218,7 +218,7 @@ with tab3:
         st.markdown(f"## 🎯 Top Candidates for **{selected_job}**")
 
         # Step 2: Filter top matches
-        job_matches = matches_df[matches_df["Job Title"] == selected_job]
+        job_matches = matches_df[matches_df["job_title"] == selected_job]
         job_matches = job_matches[job_matches["Skill Match %"] >= min_score]
         top_candidates = job_matches.sort_values("Skill Match %", ascending=False).head(10)
 
