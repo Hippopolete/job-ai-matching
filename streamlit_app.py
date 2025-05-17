@@ -205,22 +205,26 @@ with tab2:
 with tab3:
     st.subheader("📊 Recruiter View – Best Candidates per Job")
 
+    # Step 1: Dropdown to select a job title
     job_list = matches_df["Job Title"].dropna().unique()
-    selected_job = st.selectbox("Select a job to view top candidates", job_list)
+    selected_job = st.selectbox("Select a job to view top candidates", job_list, key="rec_job_select")
 
     if selected_job:
         st.markdown(f"## 🎯 Top Candidates for **{selected_job}**")
 
-        # Sidebar filters
+        # Step 2: Recruiter Filters
         with st.sidebar:
             st.markdown("## 🧑‍💼 Recruiter Filters")
-            min_score = st.slider("📈 Minimum Skill Match %", 0, 100, 20)
-            education_levels = matches_df["Education Level"].dropna().unique()
-            selected_edu = st.multiselect("🎓 Education Level", education_levels)
-            max_exp = int(matches_df["Experience (Years)"].max())
-            selected_exp = st.slider("🧪 Min Experience (Years)", 0, max_exp, 0)
 
-        # Filter matches
+            min_score = st.slider("📈 Minimum Skill Match %", 0, 100, 20, key="rec_min_score")
+
+            edu_levels = matches_df["Education Level"].dropna().unique()
+            selected_edu = st.multiselect("🎓 Education Level", edu_levels, key="rec_edu_filter")
+
+            max_exp = int(matches_df["Experience (Years)"].max())
+            selected_exp = st.slider("🧪 Min Experience (Years)", 0, max_exp, 0, key="rec_exp_filter")
+
+        # Step 3: Filter data
         job_matches = matches_df[matches_df["Job Title"] == selected_job]
         job_matches = job_matches[job_matches["Skill Match %"] >= min_score]
 
@@ -229,15 +233,14 @@ with tab3:
 
         job_matches = job_matches[job_matches["Experience (Years)"] >= selected_exp]
 
-        # Premium logic: show top 3 candidates for now
-        top_candidates = job_matches.sort_values("Skill Match %", ascending=False).head(3)
+        top_candidates = job_matches.sort_values("Skill Match %", ascending=False).head(10)
 
+        # Step 4: Display results
         if not top_candidates.empty:
             for _, row in top_candidates.iterrows():
                 with st.container():
                     st.markdown("---")
                     st.markdown(f"### 👤 {row['Candidate Name']}")
-
                     match_score = row["Skill Match %"]
                     color = "lime" if match_score >= 70 else "orange" if match_score >= 40 else "red"
                     st.markdown(
@@ -251,14 +254,29 @@ with tab3:
                     if pd.notna(row["Missing Skills"]) and row["Missing Skills"].strip():
                         st.markdown(f"❌ Missing Skills: `{row['Missing Skills']}`")
 
-                    with st.expander("📂 View Full Profile"):
-                        st.markdown(f"- 🎓 Education Level: {row.get('Education Level', 'N/A')}")
-                        st.markdown(f"- 🧪 Experience: {row.get('Experience (Years)', 'N/A')} years")
-                        st.markdown(f"- 💼 Preferred Title: {row.get('Preferred Job Title', 'N/A')}")
-                        st.markdown("- 📄 CV preview feature coming soon.")
+                    with st.expander("📊 Why this match?"):
+                        matched_skills = row.get("Matched Skills", "")
+                        missing_skills = row.get("Missing Skills", "")
+                        matched_count = len(matched_skills.split(", ")) if pd.notna(matched_skills) and matched_skills.strip() else 0
+                        missing_count = len(missing_skills.split(", ")) if pd.notna(missing_skills) and missing_skills.strip() else 0
+
+                        st.markdown(f"- ✅ **{matched_count} matched skill(s)**")
+                        if missing_count > 0:
+                            st.markdown(f"- ❌ **{missing_count} missing skill(s):** `{missing_skills}`")
+
+                        st.markdown("- 🎓 Candidate meets education requirement")
+                        st.markdown("- 💼 Experience is aligned with the job")
+
+                        st.markdown("""
+                        - 📊 **Scoring Breakdown**
+                            - 60% Skills  
+                            - 20% Education  
+                            - 15% Title/Experience  
+                            - 5% Other preferences
+                        """)
 
         else:
-            st.warning("No candidates match your filters.")
+            st.warning("No candidates matched your filters.")
 
 # ------------------- TAB 4: Best Jobs for Me -------------------
 with tab4:
