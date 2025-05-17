@@ -229,8 +229,22 @@ with tab3:
         if selected_job:
             job_matches = matches_df[matches_df[job_title_col] == selected_job]
 
-            min_score = st.slider("📈 Minimum Skill Match % (Recruiter Filter)", 0, 100, 20)
+            with st.sidebar:
+                st.markdown("### 🧑‍💼 Recruiter Filters")
 
+                min_score = st.slider("📈 Minimum Skill Match %", 0, 100, 20)
+
+                if "Education Level" in job_matches.columns:
+                    edu_levels = job_matches["Education Level"].dropna().unique()
+                    selected_edu = st.multiselect("🎓 Required Education", edu_levels)
+                    if selected_edu:
+                        job_matches = job_matches[job_matches["Education Level"].isin(selected_edu)]
+
+                if "Experience (Years)" in job_matches.columns:
+                    min_exp = st.slider("🧪 Minimum Years of Experience", 0, 10, 1)
+                    job_matches = job_matches[job_matches["Experience (Years)"] >= min_exp]
+
+            # Apply skill match score filter
             job_matches = job_matches[job_matches["Skill Match %"] >= min_score]
 
             if not job_matches.empty:
@@ -241,12 +255,18 @@ with tab3:
                         st.markdown("---")
                         st.markdown(f"👤 **{row['Candidate Name']}**")
                         st.markdown(f"📈 Skill Match: **{row['Skill Match %']}%**")
+
                         if row.get("Matched Skills"):
                             st.markdown(f"✅ Matched Skills: `{row['Matched Skills']}`")
                         if row.get("Missing Skills"):
                             st.markdown(f"❌ Missing Skills: `{row['Missing Skills']}`")
-            else:
-                st.warning("No candidates match the selected filters.")
+
+                        # Optional profile expander
+                        with st.expander("📄 View Candidate Profile"):
+                            if "Education Level" in row:
+                                st.markdown(f"🎓 Education Level: **{row['Education Level']}**")
+                            if "Experience (Years)" in row:
+                                st.markdown(f"🧪 Experience: **{row['Experience (Years)']} years**")
 
 # ------------------- TAB 4: Best Jobs for Me -------------------
 with tab4:
