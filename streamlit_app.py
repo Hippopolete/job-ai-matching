@@ -12,7 +12,6 @@ def extract_years_of_experience(text):
     """
     if not text or not isinstance(text, str):
         return 0
-
     match = re.search(r"(\d+(\.\d+)?)", text)
     if match:
         return float(match.group(1))
