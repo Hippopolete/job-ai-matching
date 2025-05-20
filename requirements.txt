@@ -2,4 +2,5 @@ streamlit
 pandas
 fuzzywuzzy[speedup]
 spacy
+en_core_web_lg
 sentence-transformers
