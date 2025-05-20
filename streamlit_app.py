@@ -61,15 +61,17 @@ def compute_match_score(candidate, job):
 
     # --- Experience Matching ---
     exp_score = 0
-    if candidate.get("experience_years") and job.get("min_experience_years"):
-        candidate_years = extract_years_of_experience(str(candidate["experience_years"]))
-        job_years = extract_years_of_experience(str(job["min_experience_years"]))
+    try:
+        if "experience_years" in candidate and "min_experience_years" in job:
+            candidate_years = extract_years_of_experience(str(candidate["experience_years"]))
+            job_years = extract_years_of_experience(str(job["min_experience_years"]))
 
-        if candidate_years >= job_years:
-            exp_score = 1
-        else:
-            exp_score = candidate_years / max(job_years, 1)
+            if candidate_years >= job_years:
+                exp_score = 1
+            else:
+                exp_score = candidate_years / max(job_years, 1)
+    except Exception as e:
+        print(f"[WARN] Error in experience matching: {e}")
     total_score += exp_score * 5
 
-    return round(total_score, 2)
 
