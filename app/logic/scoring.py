@@ -1,7 +1,11 @@
 import spacy
+import streamlit as st
 
-# Load spaCy model globally
-nlp = spacy.load("en_core_web_lg")
+@st.cache_resource
+def load_spacy_model():
+    return spacy.load("en_core_web_lg")
+
+nlp = load_spacy_model()
 
 def semantic_similarity(a, b):
     return nlp(a).similarity(nlp(b))
