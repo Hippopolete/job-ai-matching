@@ -1,7 +1,22 @@
 import streamlit as st
 import pandas as pd
 import logging
+import re
 
+def extract_years_of_experience(text):
+    """
+    Try to extract years from strings like:
+    - '3 years'
+    - '2.5 yrs'
+    - 'More than 5 years'
+    """
+    if not text or not isinstance(text, str):
+        return 0
+
+    match = re.search(r"(\d+(\.\d+)?)", text)
+    if match:
+        return float(match.group(1))
+    return 0
 # ------------------- Logging Setup -------------------
 logging.basicConfig(level=logging.DEBUG)
 st.set_page_config(page_title="Job AI Matching", layout="wide")
