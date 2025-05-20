@@ -1,6 +1,5 @@
 import streamlit as st
 import pandas as pd
-from fuzzywuzzy import fuzz
 
 # ------------------- Match Score Function -------------------
 def compute_match_score(candidate, job):
