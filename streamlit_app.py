@@ -1,48 +1,22 @@
 import streamlit as st
 import pandas as pd
+import logging
 
-# ------------------- Match Score Function -------------------
-def compute_match_score(candidate, job):
-    total_score = 0
-
-    # --- Skill Matching ---
-    candidate_skills = set([s.strip().lower() for s in candidate.get("skills", "").split(",") if s])
-    job_skills = set([s.strip().lower() for s in job.get("required_skills", "").split(",") if s])
-
-    exact_matches = candidate_skills & job_skills
-    fuzzy_matches = [
-        js for js in job_skills
-        if any(fuzz.token_sort_ratio(js, cs) > 80 for cs in candidate_skills)
-    ] if not exact_matches else []
-
-    skill_score = (
-        len(exact_matches) * 1.0 +
-        len(fuzzy_matches) * 0.5
-    ) / max(len(job_skills), 1)
-
-    total_score += skill_score * 60
-
-    # --- Education Matching ---
-    edu_score = 0
-    if candidate.get("education_level") and job.get("required_education"):
-        if candidate["education_level"].lower() == job["required_education"].lower():
-            edu_score = 1
-    total_score += edu_score * 20
-
-    # --- Title Matching ---
-    title_score = 0
-    if candidate.get("current_title") and job.get("job_title"):
-        title_sim = fuzz.token_sort_ratio(candidate["current_title"], job["job_title"])
-        title_score = title_sim / 100
-    total_score += title_score * 15
-
-    # --- Other (optional) ---
-    total_score += 0  # location, language etc.
-
-    return round(total_score, 2)
-
-# ------------------- Page Config and Style -------------------
+# ------------------- Logging Setup -------------------
+logging.basicConfig(level=logging.DEBUG)
 st.set_page_config(page_title="Job AI Matching", layout="wide")
+
+# ------------------- Imports -------------------
+try:
+    from app.logic.scoring import compute_match_score
+    print("✅ Imported match scoring successfully.")
+except Exception as e:
+    print(f"❌ Failed to import scoring: {e}")
+    import traceback
+    print(traceback.format_exc())
+    st.error("Error loading match score logic. Check logs.")
+
+# ------------------- Custom Style -------------------
 st.title("💼 AI Job Matching Dashboard")
 
 st.markdown("""
@@ -52,7 +26,7 @@ st.markdown("""
             color: white;
         }
         .stSlider > div[data-baseweb="slider"] {
-            background-color: #1db954;  /* Spotify green */
+            background-color: #1db954;
         }
         .stSelectbox, .stMultiSelect, .stButton {
             background-color: #1c1c1c;
@@ -79,6 +53,7 @@ def load_data():
     return candidates, matched_jobs, recruiter_view
 
 candidates, matches_df, recruiter_view = load_data()
+print("✅ Data loaded successfully.")
 
 # ------------------- USER MODE SWITCH -------------------
 st.markdown("## 🌐 Who are you?")
