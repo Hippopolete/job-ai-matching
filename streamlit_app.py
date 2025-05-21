@@ -74,4 +74,7 @@ def compute_match_score(candidate, job):
         print(f"[WARN] Error in experience matching: {e}")
     total_score += exp_score * 5
 
+    return round(total_score, 2)
+
+
 
