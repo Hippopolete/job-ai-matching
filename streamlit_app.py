@@ -1,6 +1,7 @@
 import spacy
 import streamlit as st
 import re
+import traceback
 
 # Load spaCy model once (cached)
 @st.cache_resource
