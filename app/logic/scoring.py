@@ -1,50 +1,70 @@
-import spacy
 import streamlit as st
+import pandas as pd
+import traceback
+from app.logic.scoring import compute_match_score
 
-@st.cache_resource
-def load_spacy_model():
-    return spacy.load("en_core_web_lg")
+try:
+    # ------------------- Page Setup -------------------
+    st.set_page_config(page_title="Job AI Matching", layout="wide")
+    st.title("💼 AI Job Matching Dashboard")
 
-nlp = load_spacy_model()
+    # ------------------- Custom Styling -------------------
+    st.markdown("""
+        <style>
+            .main {
+                background-color: #121212;
+                color: white;
+            }
+            .stSlider > div[data-baseweb="slider"] {
+                background-color: #1db954;
+            }
+            .stSelectbox, .stMultiSelect, .stButton {
+                background-color: #1c1c1c;
+            }
+            .stDataFrame {
+                background-color: #1c1c1c;
+            }
+            .stMarkdown, .stExpander {
+                font-family: 'Helvetica Neue', sans-serif;
+            }
+            .stMarkdown h2 {
+                border-left: 4px solid #1db954;
+                padding-left: 12px;
+            }
+        </style>
+    """, unsafe_allow_html=True)
 
-def semantic_similarity(a, b):
-    return nlp(a).similarity(nlp(b))
+    # ------------------- Load Data -------------------
+    @st.cache_data
+    def load_data():
+        candidates = pd.read_csv("candidates.csv")
+        matched_jobs = pd.read_csv("final_matched_jobs.csv")
+        recruiter_view = pd.read_csv("recruiter_view.csv")
+        return candidates, matched_jobs, recruiter_view
 
-def compute_match_score(candidate, job):
-    total_score = 0
+    candidates, matches_df, recruiter_view = load_data()
+    st.write("✅ Data loaded.")
 
-    # --- Skill Matching ---
-    candidate_skills = [s.strip().lower() for s in candidate.get("skills", "").split(",") if s]
-    job_skills = [s.strip().lower() for s in job.get("required_skills", "").split(",") if s]
+    # ------------------- Debug Columns -------------------
+    st.subheader("🧪 Column Check")
+    st.write("Candidates Columns:", candidates.columns.tolist())
+    st.write("Jobs Columns:", matches_df.columns.tolist())
 
-    exact_matches = set(candidate_skills) & set(job_skills)
+    # ------------------- Test Matching -------------------
+    if not candidates.empty and not matches_df.empty:
+        sample_candidate = candidates.iloc[0]
+        sample_job = matches_df.iloc[0]
 
-    semantic_matches = [
-        js for js in job_skills
-        if any(semantic_similarity(js, cs) > 0.82 for cs in candidate_skills)
-    ] if not exact_matches else []
+        try:
+            score = compute_match_score(sample_candidate, sample_job)
+            st.success(f"Match score between '{sample_candidate['name']}' and '{sample_job['job_title']}': **{score}** / 100")
+        except Exception as e:
+            st.error(f"🔥 Matching crashed: {e}")
+            st.text(traceback.format_exc())
 
-    skill_score = (
-        len(exact_matches) * 1.0 +
-        len(semantic_matches) * 0.6
-    ) / max(len(job_skills), 1)
+except Exception as app_error:
+    st.error("🚨 App Crashed")
+    st.text(traceback.format_exc())
 
-    total_score += skill_score * 60
-
-    # --- Education Matching ---
-    edu_score = 0
-    if candidate.get("education_level") and job.get("required_education"):
-        if candidate["education_level"].lower() == job["required_education"].lower():
-            edu_score = 1
-    total_score += edu_score * 20
-
-    # --- Title Matching ---
-    title_score = 0
-    if candidate.get("current_title") and job.get("job_title"):
-        title_sim = semantic_similarity(candidate["current_title"], job["job_title"])
-        title_score = title_sim  # Already between 0 and 1
-    total_score += title_score * 15
-
-    return round(total_score, 2)
 
 
