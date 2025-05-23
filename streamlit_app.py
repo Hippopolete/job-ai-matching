@@ -41,42 +41,36 @@ def load_data():
     recruiter_view = pd.read_csv("recruiter_view.csv")
     return candidates, matched_jobs, recruiter_view
 
+# ------------------- Main App Logic -------------------
 try:
     candidates, matches_df, recruiter_view = load_data()
-    st.write("✅ Data loaded.")
+    st.success("✅ Data loaded.")
 
-    # ------------------- Debug Columns -------------------
-    st.subheader("🧪 Column Check")
-    st.write("📌 Candidates Columns:", candidates.columns.tolist())
-    st.write("📌 Jobs Columns:", matches_df.columns.tolist())
+    # Column inspection
+    st.subheader("🧾 Column Preview")
+    st.write("📌 Candidate columns:", candidates.columns.tolist())
+    st.write("📌 Job columns:", matches_df.columns.tolist())
 
-    # ------------------- Test Matching -------------------
-        if not candidates.empty and not matches_df.empty:
+    if not candidates.empty and not matches_df.empty:
         sample_candidate = candidates.iloc[0]
         sample_job = matches_df.iloc[0]
 
-        # 🧪 Debug the first candidate and job to inspect available fields
-        st.subheader("🧾 Candidate Sample Row")
+        st.subheader("👤 First Candidate Row")
         st.write(sample_candidate.to_dict())
 
-        st.subheader("🧾 Job Sample Row")
+        st.subheader("💼 First Job Row")
         st.write(sample_job.to_dict())
 
         try:
             score = compute_match_score(sample_candidate, sample_job)
 
-            # ⚠️ Temporary placeholder using fallback keys — update once you confirm column names!
-            st.success(
-                f"Match score: **{score} / 100**"
-            )
+            # Display only the score for now (until you confirm name fields)
+            st.success(f"Match score: **{score} / 100**")
 
         except Exception as e:
             st.error("🔥 Matching crashed:")
             st.text(traceback.format_exc())
 
-
-
-
-
-
-
+except Exception as app_error:
+    st.error("🚨 App Crashed:")
+    st.text(traceback.format_exc())
