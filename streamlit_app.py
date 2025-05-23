@@ -47,18 +47,25 @@ try:
 
     # ------------------- Debug Columns -------------------
     st.subheader("🧪 Column Check")
-    st.write("📌 Candidate Columns:", sample_candidate.index.tolist())
-    st.write("📌 First Candidate Data:", sample_candidate.to_dict())
-    st.write("Jobs Columns:", matches_df.columns.tolist())
+    st.write("📌 Candidates Columns:", candidates.columns.tolist())
+    st.write("📌 Jobs Columns:", matches_df.columns.tolist())
 
     # ------------------- Test Matching -------------------
     if not candidates.empty and not matches_df.empty:
         sample_candidate = candidates.iloc[0]
         sample_job = matches_df.iloc[0]
 
+        # Debug the structure of the candidate row
+        st.write("📌 Candidate Sample Row:", sample_candidate.to_dict())
+
         try:
             score = compute_match_score(sample_candidate, sample_job)
-            st.success(f"Match score between '{sample_candidate['full_name']}' and '{sample_job['job_title']}': **{score}** / 100")
+
+            # Display match score using first_name and last_name (update as needed)
+            st.success(
+                f"Match score between **{sample_candidate['first_name']} {sample_candidate['last_name']}** "
+                f"and **{sample_job['job_title']}**: **{score} / 100**"
+            )
 
         except Exception as e:
             st.error("🔥 Matching crashed:")
@@ -67,6 +74,7 @@ try:
 except Exception as app_error:
     st.error("🚨 App Crashed:")
     st.text(traceback.format_exc())
+
 
 
 
