@@ -47,7 +47,8 @@ try:
 
     # ------------------- Debug Columns -------------------
     st.subheader("🧪 Column Check")
-    st.write("Candidates Columns:", candidates.columns.tolist())
+    st.write("📌 Candidate Columns:", sample_candidate.index.tolist())
+    st.write("📌 First Candidate Data:", sample_candidate.to_dict())
     st.write("Jobs Columns:", matches_df.columns.tolist())
 
     # ------------------- Test Matching -------------------
