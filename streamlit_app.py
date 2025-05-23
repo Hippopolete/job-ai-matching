@@ -1,13 +1,8 @@
 import streamlit as st
-import pandas as pd
-import traceback
-from app.logic.scoring import compute_match_score
+from app.views.job_seeker import job_seeker_view
+from app.views.recruiter import recruiter_view
 
-# ------------------- Page Setup -------------------
-st.set_page_config(page_title="Job AI Matching", layout="wide")
-st.title("💼 AI Job Matching Dashboard")
-
-# ------------------- Custom Styling -------------------
+st.set_page_config(page_title="AI Job Matcher", layout="wide")
 st.markdown("""
     <style>
         .main {
@@ -33,44 +28,15 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# ------------------- Load Data -------------------
-@st.cache_data
-def load_data():
-    candidates = pd.read_csv("candidates.csv")
-    matched_jobs = pd.read_csv("final_matched_jobs.csv")
-    recruiter_view = pd.read_csv("recruiter_view.csv")
-    return candidates, matched_jobs, recruiter_view
+# Load user mode
+st.sidebar.title("👤 Choose Your Role")
+user_mode = st.sidebar.radio("Select view:", ["🎯 Job Seeker", "🏢 Recruiter"], horizontal=False)
 
-# ------------------- Main App Logic -------------------
-try:
-    candidates, matches_df, recruiter_view = load_data()
-    st.success("✅ Data loaded.")
+# Load appropriate view
+if user_mode == "🎯 Job Seeker":
+    job_seeker_view()
+elif user_mode == "🏢 Recruiter":
+    recruiter_view()
+else:
+    st.warning("Please select a role from the sidebar.")
 
-    # Column inspection
-    st.subheader("🧾 Column Preview")
-    st.write("📌 Candidate columns:", candidates.columns.tolist())
-    st.write("📌 Job columns:", matches_df.columns.tolist())
-
-    if not candidates.empty and not matches_df.empty:
-        sample_candidate = candidates.iloc[0]
-        sample_job = matches_df.iloc[0]
-
-        st.subheader("👤 First Candidate Row")
-        st.write(sample_candidate.to_dict())
-
-        st.subheader("💼 First Job Row")
-        st.write(sample_job.to_dict())
-
-        try:
-            score = compute_match_score(sample_candidate, sample_job)
-
-            # Display only the score for now (until you confirm name fields)
-            st.success(f"Match score: **{score} / 100**")
-
-        except Exception as e:
-            st.error("🔥 Matching crashed:")
-            st.text(traceback.format_exc())
-
-except Exception as app_error:
-    st.error("🚨 App Crashed:")
-    st.text(traceback.format_exc())
