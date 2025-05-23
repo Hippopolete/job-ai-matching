@@ -57,7 +57,8 @@ try:
 
         try:
             score = compute_match_score(sample_candidate, sample_job)
-            st.success(f"Match score between '{sample_candidate['name']}' and '{sample_job['job_title']}': **{score}** / 100")
+            st.success(f"Match score between '{sample_candidate['full_name']}' and '{sample_job['job_title']}': **{score}** / 100")
+
         except Exception as e:
             st.error("🔥 Matching crashed:")
             st.text(traceback.format_exc())
