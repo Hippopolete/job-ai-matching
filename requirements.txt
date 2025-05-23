@@ -1,6 +1,6 @@
 streamlit
 pandas
 fuzzywuzzy[speedup]
-
+python-dotenv
 
 
